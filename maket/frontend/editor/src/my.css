@@ -1,0 +1,128 @@
+body {
+    background-color: white;
+    margin: 0;
+}
+
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30vh;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 1.6rem;
+}
+
+.layout {
+    display: flex;
+}
+.templates {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.templateCard {
+    align-self: center;
+    margin: 5px;
+    padding: 10px 0px;
+    background-color: white;
+    border: 2px solid black;
+    border-radius: 15px;
+    min-width: 10rem;
+    max-width: 15vw;
+    width: 20rem;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+.templateCard:hover {
+    filter: invert(1);
+}
+.templateCardContent {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 0;
+}
+.templateImage {
+    padding: 0 10px;
+    width: 40px;
+    height: 40px;
+}
+
+.layoutEditor {
+    border: 3px solid black;
+}
+.settings {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+}
+.subtitle {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 1.2rem;
+    justify-self: center;
+}
+.settings button {
+    align-self: center;
+    margin: 5px;
+    background-color: black;
+    cursor: pointer;
+    color: white;
+    padding: 15px 0px;
+    border: none;
+    border-radius: 15px;
+    min-width: 10rem;
+    max-width: 15vw;
+    width: 20rem;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 1.2rem;
+}
+
+.settings button:hover {
+    border: 1px solid white;
+}
+
+.settings button:disabled {
+    background-color: #ccc; /* Greyed out */
+    color: #666; /* Duller text */
+    cursor: not-allowed; /* Show "not allowed" cursor */
+    opacity: 0.6; /* Slightly faded */
+}
+.graph {
+    display: flex;
+    margin: 0;
+}
+.llm {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+}
+.maketllm {
+    margin: 5px;
+    padding: 20px 10px;
+    width: 90%;
+    display: flex;
+    justify-content: center;
+}
+.maketllmimg {
+    width: 30%;
+}
+.nodeimg {
+    min-width: 20rem;
+    width: 20vw;
+}
+
+.maketeditor{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    align-items: center;
+}
+
+.flateditor {
+    padding: 0 10px;
+    width: 500px;
+}
