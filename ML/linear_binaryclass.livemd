@@ -1,0 +1,239 @@
+# Linear Neuron - Binary Classification
+
+## Section
+
+```elixir
+neurons = :ets.new(:neurons, [:set, :named_table, :public])
+:ets.insert(neurons, {"neuron1", {0.3, 0.2}})
+:ets.insert(neurons, {"neuron2", {0.1, 0.4}})
+:ets.lookup(neurons, "neuron1")
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+[{"neuron1", {0.3, 0.2}}]
+```
+
+```elixir
+defmodule Model do
+  
+def run_model(input, turn) when is_float(input) do
+  input_0 = 0.1
+  input_1 = 0.9
+  learning_rate = 0.1
+  
+  {:ok, output1} = neuron_1(input)
+  {:ok, output2} = neuron_2(input)
+  IO.puts("input is: #{inspect(input)} output 1 is: #{inspect(output1)}")
+  IO.puts("input is: #{inspect(input)} output 2 is: #{inspect(output2)}")
+  update_neuron_1(input, output1, learning_rate)
+  update_neuron_2(input, output2, learning_rate)
+  turn = turn + 1
+  case turn do
+    n when n < 10 and rem(n, 2) == 0 ->
+      run_model(input_1,turn)
+    n when n < 10 and rem(n, 2) != 0 ->
+      run_model(input_0,turn)
+    10 ->
+      IO.puts("this is the end")
+    _ ->
+      IO.puts("something else happened")
+  end
+end
+
+defp neuron_1(input) do
+  [{_,{bias, weight}}] = :ets.lookup(:neurons, "neuron1")
+  output = bias + (weight * input)
+  {:ok, output}
+end
+
+defp neuron_2(input) do
+  [{_,{bias, weight}}] = :ets.lookup(:neurons, "neuron2")
+  output = bias + (weight * input)
+  {:ok, output}
+end
+
+defp update_neuron_1(input, output, learning_rate) do
+  [{_,{bias, weight}}] = :ets.lookup(:neurons, "neuron1")
+  case input do 
+    0.1 ->
+      target = 0.9
+      {new_bias, new_weight, loss} = math_stuff(target, input, output, learning_rate, weight, bias)
+      IO.puts("loss for neuron 1 is: #{inspect(loss)}")
+      :ets.insert(:neurons, {"neuron1", {new_bias, new_weight}})
+    0.9 ->
+      target = 0.1
+      {new_bias, new_weight, loss} = math_stuff(target, input, output, learning_rate, weight, bias)
+      IO.puts("loss for neuron 1 is: #{inspect(loss)}")
+      :ets.insert(:neurons, {"neuron1", {new_bias, new_weight}})
+    _ ->
+      IO.puts("something unexpected happened in neuron 1 update")
+  end
+  :ok
+end
+
+defp update_neuron_2(input, output, learning_rate) do
+  [{_,{bias, weight}}] = :ets.lookup(:neurons, "neuron2")
+  case input do 
+    0.1 ->
+      target = 0.1
+      {new_bias, new_weight, loss} = math_stuff(target, input, output, learning_rate, weight, bias)
+      IO.puts("loss for neuron 2 is: #{inspect(loss)}")
+      :ets.insert(:neurons, {"neuron2", {new_bias, new_weight}})
+    0.9 ->
+      target = 0.9
+      {new_bias, new_weight, loss} = math_stuff(target, input, output, learning_rate, weight, bias)
+      IO.puts("loss for neuron 2 is: #{inspect(loss)}")
+      :ets.insert(:neurons, {"neuron2", {new_bias, new_weight}})
+    _ ->
+      IO.puts("something unexpected happened in neuron 2 update")
+  end  
+  :ok
+end
+
+defp math_stuff(target, input, output, learning_rate, weight, bias) do
+  delta = target - output
+  partial_loss = delta * delta
+  loss = 0.5 * partial_loss
+  weight_delta = delta * input * learning_rate
+  new_weight = weight + weight_delta
+  bias_delta = delta * learning_rate
+  new_bias = bias + bias_delta
+  {new_bias, new_weight, loss}
+end
+
+def evaluate(input) when input in [0.1, 0.9] do
+  # Get outputs from both neurons
+  {:ok, output1} = neuron_1(input)
+  {:ok, output2} = neuron_2(input)
+
+  # Print neuron outputs
+  IO.puts("Input: #{input}")
+  IO.puts("Neuron 1 output: #{output1}")
+  IO.puts("Neuron 2 output: #{output2}")
+
+  # Determine prediction based on neuron outputs
+  prediction = cond do
+    output1 > output2 and input == 0.1 -> "Correct: Predicted Class 1 (target 0.9)"
+    output1 < output2 and input == 0.9 -> "Correct: Predicted Class 2 (target 0.9)"
+    true -> "Incorrect prediction"
+  end
+
+  # Print prediction result
+  IO.puts("Prediction: #{prediction}")
+
+  # Return outputs for potential further use
+  {:ok, output1, output2, prediction}
+end
+  
+end
+
+Model.run_model(0.1, 1)
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+input is: 0.1 output 1 is: 0.8988767815736893
+input is: 0.1 output 2 is: 0.10046723754610538
+loss for neuron 1 is: 6.308098166019319e-7
+loss for neuron 2 is: 1.0915546224528785e-7
+input is: 0.9 output 1 is: 0.1011018674597427
+input is: 0.9 output 2 is: 0.8995416440507349
+loss for neuron 1 is: 6.070559494199095e-7
+loss for neuron 2 is: 1.0504508811337029e-7
+input is: 0.1 output 1 is: 0.8988701230816348
+input is: 0.1 output 2 is: 0.10047000735241864
+loss for neuron 1 is: 6.383109253272107e-7
+loss for neuron 2 is: 1.1045345566378535e-7
+input is: 0.9 output 1 is: 0.10102558603363099
+input is: 0.9 output 2 is: 0.8995733756761383
+loss for neuron 1 is: 5.259133561894647e-7
+loss for neuron 2 is: 9.100415685525079e-8
+input is: 0.1 output 1 is: 0.898872451772724
+input is: 0.1 output 2 is: 0.10046903866112529
+loss for neuron 1 is: 6.356825024166359e-7
+loss for neuron 2 is: 1.0999863281509972e-7
+input is: 0.9 output 1 is: 0.10096285771831692
+input is: 0.9 output 2 is: 0.8995994694646946
+loss for neuron 1 is: 4.6354749286123007e-7
+loss for neuron 2 is: 8.021235485602361e-8
+input is: 0.1 output 1 is: 0.8988813826523823
+input is: 0.1 output 2 is: 0.10046532358469994
+loss for neuron 1 is: 6.256523851956921e-7
+loss for neuron 2 is: 1.0826301923899691e-7
+input is: 0.9 output 1 is: 0.10091050976219185
+input is: 0.9 output 2 is: 0.8996212452208525
+loss for neuron 1 is: 4.145140135233216e-7
+loss for neuron 2 is: 7.172759136353781e-8
+input is: 0.1 output 1 is: 0.8988951174404126
+input is: 0.1 output 2 is: 0.10045961017357231
+loss for neuron 1 is: 6.103827352402086e-7
+loss for neuron 2 is: 1.0562075582558377e-7
+this is the end
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+:ok
+```
+
+```elixir
+Model.evaluate(0.1)
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+Input: 0.1
+Neuron 1 output: 0.899006710578931
+Neuron 2 output: 0.10041318954604152
+Prediction: Correct: Predicted Class 1 (target 0.9)
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+{:ok, 0.899006710578931, 0.10041318954604152, "Correct: Predicted Class 1 (target 0.9)"}
+```
+
+```elixir
+Model.evaluate(0.9)
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+Input: 0.9
+Neuron 1 output: 0.10086613969423008
+Neuron 2 output: 0.8996397023269589
+Prediction: Correct: Predicted Class 2 (target 0.9)
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+{:ok, 0.10086613969423008, 0.8996397023269589, "Correct: Predicted Class 2 (target 0.9)"}
+```
+
+```elixir
+:ets.lookup(:neurons, "neuron1")
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+[{"neuron1", {0.9987742819395186, -0.997675713605876}}]
+```
+
+```elixir
+:ets.lookup(:neurons, "neuron2")
+```
+
+<!-- livebook:{"output":true} -->
+
+```
+[{"neuron2", {5.098754484268384e-4, 0.9990331409761467}}]
+```
