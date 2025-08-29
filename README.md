@@ -1,6 +1,7 @@
 # funstuff
 
 Contains:
+
 Machine learning projects in Python and Elixir
 
 TCP and Custom Protocol servers in Go and Elixir
